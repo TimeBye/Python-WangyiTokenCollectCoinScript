@@ -1,8 +1,9 @@
 import requests
 import json
+import os
 
 cookies = {
-    'NTES_YD_SESS': 'Your cookie info'
+    'NTES_YD_SESS': 'Your cookie info',
     '_gat': 'Your cookie info',
     'STAREIG': 'Your cookie info',
 }
@@ -17,7 +18,6 @@ headers = {
     'X-Requested-With': 'XMLHttpRequest',
 }
 
-# 请求领取coin接口
 def collectCoins(coinId):
 	headers = {
 	    'Host': 'star.8.163.com',
@@ -33,19 +33,17 @@ def collectCoins(coinId):
 
 	data = '{"id":%s}' %coinId
 	response = requests.post('https://star.8.163.com/api/starUserCoin/collectUserCoin', headers=headers, cookies=cookies, data=data)
-	print(response.text)
-	print(data)
 
+cookies['NTES_YD_SESS'] = os.environ["NTES_YD_SESS"]
+cookies['_ga'] = os.environ["GA"]
+cookies['STAREIG'] = os.environ["STAREIG"]
 
-# 1、请求首页数据，检查是否有coin可以收集。有则将coin保存到列表容器
 response = requests.post('https://star.8.163.com/api/home/index', headers=headers, cookies=cookies)
 jsonData = json.loads(response.text)
 collectCoinsList = jsonData['data']['collectCoins']
-print(collectCoinsList)
 if len(collectCoinsList) == 0:
-	print('当前没有黑钻可以领取...')
+	print('no star...')
 else:
-	# 2、检查coin列表容器是否有值，遍历请求领取coin接口
 	for collectCoinsItem in collectCoinsList:
 		print(collectCoinsItem)
 		collectCoins(collectCoinsItem['id'])
